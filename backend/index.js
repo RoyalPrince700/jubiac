@@ -30,6 +30,8 @@ const corsOptions = {
         if (!origin) return callback(null, true);
         
         const allowedOrigins = [
+            'https://www.jubiac.com',
+            'https://jubiac.com',
             'https://jubiac.vercel.app',
             'https://jubiac-backend.vercel.app', // Backend domain (in case of same-origin requests)
             'http://localhost:5173',
@@ -59,7 +61,19 @@ app.use(cors(corsOptions));
 
 // Additional CORS headers middleware (backup)
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://jubiac.vercel.app');
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+        'https://www.jubiac.com',
+        'https://jubiac.com',
+        'https://jubiac.vercel.app',
+        'http://localhost:5173',
+        process.env.FRONTEND_URL
+    ].filter(Boolean);
+
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+    }
+    
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie');

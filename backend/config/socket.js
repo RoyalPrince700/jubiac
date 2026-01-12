@@ -5,6 +5,8 @@ const initializeSocket = (server) => {
     const io = new Server(server, {
         cors: {
             origin: [
+                'https://www.jubiac.com',
+                'https://jubiac.com',
                 'https://jubiac.vercel.app',
                 'http://localhost:5173',
                 'http://localhost:3000',
