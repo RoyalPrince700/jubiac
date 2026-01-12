@@ -1,0 +1,87 @@
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const passport = require('passport');
+require('./config/passport');
+const router = require('./routes');
+const { createServer } = require('http');
+const initializeSocket = require('./config/socket');
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to DB'))
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        process.exit(1); // Exit if unable to connect
+    });
+
+const app = express();
+const server = createServer(app);
+
+// Initialize Socket.IO
+const io = initializeSocket(server);
+
+// Middleware
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            'https://jubiac.vercel.app',
+            'https://jubiac-backend.vercel.app', // Backend domain (in case of same-origin requests)
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'http://localhost:8080'
+        ];
+        
+        // Add environment variable origin if it exists
+        if (process.env.FRONTEND_URL) {
+            allowedOrigins.push(process.env.FRONTEND_URL);
+        }
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
+
+// Additional CORS headers middleware (backup)
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://jubiac.vercel.app');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie');
+    
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
+
+// Make io available to routes
+app.set('io', io);
+app.use("/api", router);
+
+// Start the server
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
