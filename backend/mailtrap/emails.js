@@ -1,6 +1,14 @@
 const { transporter, sender } = require('./mailtrap.config');
 const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_NOTIFICATION_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE, PAYMENT_SUCCESS_EMAIL_TEMPLATE } = require('./emailTemplates');
 
+const logSendAttempt = (label, options) => {
+    console.log(`[Mailtrap][${label}] attempting send`, {
+        to: options.to,
+        subject: options.subject,
+        from: options.from,
+    });
+};
+
 const sendVerificationEmail = async (email, token) => {
     try {
         const mailOptions = {
@@ -10,6 +18,7 @@ const sendVerificationEmail = async (email, token) => {
             html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", token),
         };
 
+        logSendAttempt('verification', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log("Verification email sent successfully:", response.messageId);
     } catch (error) {
@@ -27,6 +36,7 @@ const sendWelcomeEmail = async (email) => {
             html: `<h1>Welcome to Jubiac!</h1><p>Thank you for joining us. We're excited to have you!</p>`,
         };
 
+        logSendAttempt('welcome', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log("Welcome email sent successfully:", response.messageId);
     } catch (error) {
@@ -44,6 +54,7 @@ const sendPasswordResetEmail = async (email, resetURL) => {
             html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
         };
 
+        logSendAttempt('password-reset', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log("Password reset email sent successfully:", response.messageId);
     } catch (error) {
@@ -61,6 +72,7 @@ const sendResetSuccessfulEmail = async (email) => {
             html: PASSWORD_RESET_SUCCESS_TEMPLATE,
         };
 
+        logSendAttempt('password-reset-success', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log("Password reset successful email sent successfully:", response.messageId);
     } catch (error) {
@@ -104,6 +116,7 @@ const sendOrderNotificationEmail = async (recipients, payload) => {
             html,
         };
 
+        logSendAttempt('admin-order-notification', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log('Admin order notification email sent:', response.messageId);
     } catch (error) {
@@ -143,6 +156,7 @@ const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
             html,
         };
 
+        logSendAttempt('user-order-confirmation', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log('User order confirmation email sent:', response.messageId);
     } catch (error) {
@@ -174,6 +188,7 @@ const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
             html,
         };
 
+        logSendAttempt('payment-success-user', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log('Payment success email sent to user:', response.messageId);
     } catch (error) {
@@ -212,6 +227,7 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
             html,
         };
 
+        logSendAttempt('payment-success-admin', mailOptions);
         const response = await transporter.sendMail(mailOptions);
         console.log('Payment success notification sent to admin:', response.messageId);
     } catch (error) {

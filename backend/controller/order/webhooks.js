@@ -82,12 +82,24 @@ const webhooks = async(request,response)=>{
                     itemCount: productDetails.length
                 };
 
+                console.log('[webhooks] preparing email sends', {
+                    userId: meta.userId,
+                    customerEmail: paymentData.customerEmail,
+                    adminEmail: process.env.ADMIN_NOTIFICATION_EMAIL,
+                    itemCount: paymentData.itemCount,
+                });
+
                 // Send email to user if userId exists
                 if (meta.userId) {
                     const user = await UserModel.findById(meta.userId);
+                    console.log('[webhooks] user lookup', { userId: meta.userId, userEmail: user?.email });
                     if (user && user.email) {
                         await sendPaymentSuccessEmail(user.email, paymentData);
+                    } else {
+                        console.log('[webhooks] user email missing, skipping user email');
                     }
+                } else {
+                    console.log('[webhooks] userId missing, skipping user email');
                 }
 
                 // Send notification to admin

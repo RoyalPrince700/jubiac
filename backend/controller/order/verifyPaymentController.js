@@ -99,12 +99,24 @@ const verifyPaymentController = async (request, response) => {
                     itemCount: cartItemsForCheckout.length
                 };
 
+                console.log('[verifyPaymentController] preparing email sends', {
+                    userId,
+                    customerEmail: paymentData.customerEmail,
+                    adminEmail: process.env.ADMIN_NOTIFICATION_EMAIL,
+                    itemCount: paymentData.itemCount,
+                });
+
                 // Send email to user if userId exists
                 if (userId) {
                     const user = await UserModel.findById(userId);
+                    console.log('[verifyPaymentController] user lookup', { userId, userEmail: user?.email });
                     if (user && user.email) {
                         await sendPaymentSuccessEmail(user.email, paymentData);
+                    } else {
+                        console.log('[verifyPaymentController] user email missing, skipping user email');
                     }
+                } else {
+                    console.log('[verifyPaymentController] userId missing, skipping user email');
                 }
 
                 // Send notification to admin
