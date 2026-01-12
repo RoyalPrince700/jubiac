@@ -88,6 +88,125 @@ const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </html>
 `;
 
+const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(to right, #4B5563, #1F2937); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; }
+    .content { background-color: #F9FAFB; padding: 20px; border-radius: 0 0 8px 8px; }
+    .order-details { background: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+    th { background-color: #F3F4F6; font-weight: bold; }
+    .total { font-weight: bold; color: #1F2937; }
+    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Order Confirmed!</h1>
+    <p>Thank you for your order, {name}!</p>
+  </div>
+
+  <div class="content">
+    <div class="order-details">
+      <h3>Order Details</h3>
+      <p><strong>Order ID:</strong> {orderId}</p>
+      <p><strong>Delivery Address:</strong> {address}</p>
+      <p><strong>Payment Method:</strong> {paymentMethod}</p>
+      <p><strong>Note:</strong> {note}</p>
+
+      <h4>Items Ordered</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {itemsRows}
+        </tbody>
+      </table>
+
+      <div class="total">
+        <p><strong>Total Amount: {total}</strong></p>
+      </div>
+    </div>
+
+    <p>We'll process your order shortly and send you updates on the delivery status.</p>
+    <p>If you have any questions, feel free to contact our support team.</p>
+
+    <p>Best regards,<br>The Jubiac Team</p>
+  </div>
+
+  <div class="footer">
+    <p>This is an automated message from Jubiac. Please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+
+const PAYMENT_SUCCESS_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(to right, #10B981, #059669); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; }
+    .content { background-color: #F0FDF4; padding: 20px; border-radius: 0 0 8px 8px; }
+    .payment-details { background: white; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #10B981; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+    th { background-color: #F3F4F6; font-weight: bold; }
+    .total { font-weight: bold; color: #059669; font-size: 18px; }
+    .success-icon { font-size: 48px; color: #10B981; text-align: center; margin: 10px 0; }
+    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="success-icon">✓</div>
+    <h1>Payment Successful!</h1>
+    <p>Your payment has been processed successfully</p>
+  </div>
+
+  <div class="content">
+    <div class="payment-details">
+      <h3>Payment Details</h3>
+      <p><strong>Transaction ID:</strong> {transactionId}</p>
+      <p><strong>Payment Method:</strong> {paymentMethod}</p>
+      <p><strong>Amount Paid:</strong> <span class="total">₦{amount}</span></p>
+      <p><strong>Payment Date:</strong> {paymentDate}</p>
+
+      {orderDetails}
+
+      <p><strong>Status:</strong> <span style="color: #10B981; font-weight: bold;">Payment Completed Successfully</span></p>
+    </div>
+
+    <p>Thank you for your payment! Your order is now being processed.</p>
+    <p>You will receive updates on your order status via email and in-app notifications.</p>
+
+    <p>Best regards,<br>The Jubiac Team</p>
+  </div>
+
+  <div class="footer">
+    <p>This is an automated message from Jubiac. Please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+
 module.exports = {
   VERIFICATION_EMAIL_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
@@ -140,5 +259,6 @@ module.exports = {
   <p style="color:#6b7280; font-size: 12px;">This message was sent automatically by Jubiac backend.</p>
 </body>
 </html>
-`
+`,
+  ORDER_CONFIRMATION_EMAIL_TEMPLATE,
 };

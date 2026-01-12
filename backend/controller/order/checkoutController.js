@@ -2,6 +2,7 @@ const addToCartModel = require('../../models/cartProduct');
 const checkoutModel = require('../../models/checkoutModel'); // Adjust the path if needed
 const NotificationModel = require('../../models/notification'); // Import notification model
 const UserModel = require('../../models/userModel'); // Import user model to fetch HR users
+const { sendUserOrderConfirmationEmail } = require('../../mailtrap/emails'); // Import email function
 
 const createCheckout = async (req, res) => {
   try {
@@ -70,6 +71,18 @@ const createCheckout = async (req, res) => {
       // Save HR notifications in bulk
       if (hrNotifications.length > 0) {
         await NotificationModel.insertMany(hrNotifications);
+      }
+
+      // Send order confirmation email to the user
+      try {
+        const user = await UserModel.findById(req.userId);
+        if (user && user.email) {
+          await sendUserOrderConfirmationEmail(user.email, savedCheckout);
+          console.log('Order confirmation email sent to user:', user.email);
+        }
+      } catch (emailError) {
+        console.error('Error sending order confirmation email:', emailError);
+        // Don't throw error - we don't want to block the order creation
       }
     }
 

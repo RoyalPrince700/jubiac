@@ -2,6 +2,8 @@ const flw = require('../../config/flutterwave');
 const orderModel = require('../../models/orderProductModel');
 const checkoutModel = require('../../models/checkoutModel');
 const addToCartModel = require('../../models/cartProduct');
+const UserModel = require('../../models/userModel');
+const { sendPaymentSuccessEmail, sendPaymentSuccessNotificationToAdmin } = require('../../mailtrap/emails');
 
 const verifyPaymentController = async (request, response) => {
     try {
@@ -82,6 +84,35 @@ const verifyPaymentController = async (request, response) => {
 
             if (savedCheckout?._id && (meta.userId || request.userId)) {
                 await addToCartModel.deleteMany({ userId: meta.userId || request.userId });
+            }
+
+            // Send payment success emails
+            try {
+                const userId = meta.userId || request.userId;
+                const paymentData = {
+                    transactionId: transactionData.id.toString(),
+                    paymentMethod: 'Flutterwave Card',
+                    amount: transactionData.amount,
+                    paymentDate: new Date().toLocaleString(),
+                    orderId: savedCheckout._id,
+                    customerEmail: transactionData.customer?.email,
+                    itemCount: cartItemsForCheckout.length
+                };
+
+                // Send email to user if userId exists
+                if (userId) {
+                    const user = await UserModel.findById(userId);
+                    if (user && user.email) {
+                        await sendPaymentSuccessEmail(user.email, paymentData);
+                    }
+                }
+
+                // Send notification to admin
+                await sendPaymentSuccessNotificationToAdmin(paymentData);
+
+            } catch (emailError) {
+                console.error('Error sending payment success emails:', emailError);
+                // Don't throw error - payment was successful
             }
 
             return response.status(200).json({

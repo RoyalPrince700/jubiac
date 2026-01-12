@@ -1,6 +1,8 @@
 const flw = require('../../config/flutterwave')
 const addToCartModel = require('../../models/cartProduct')
 const orderModel = require('../../models/orderProductModel')
+const UserModel = require('../../models/userModel')
+const { sendPaymentSuccessEmail, sendPaymentSuccessNotificationToAdmin } = require('../../mailtrap/emails')
 
 const secretHash = process.env.FLUTTERWAVE_SECRET_HASH
 
@@ -66,6 +68,34 @@ const webhooks = async(request,response)=>{
 
             if(saveOrder?._id && meta.userId){
                 const deleteCartItem = await addToCartModel.deleteMany({userId: meta.userId})
+            }
+
+            // Send payment success emails
+            try {
+                const paymentData = {
+                    transactionId: transactionData.id.toString(),
+                    paymentMethod: transactionData.payment_type || 'card',
+                    amount: transactionData.amount || payload.data?.amount,
+                    paymentDate: new Date().toLocaleString(),
+                    orderId: saveOrder._id,
+                    customerEmail: transactionData.customer?.email || payload.data?.customer?.email,
+                    itemCount: productDetails.length
+                };
+
+                // Send email to user if userId exists
+                if (meta.userId) {
+                    const user = await UserModel.findById(meta.userId);
+                    if (user && user.email) {
+                        await sendPaymentSuccessEmail(user.email, paymentData);
+                    }
+                }
+
+                // Send notification to admin
+                await sendPaymentSuccessNotificationToAdmin(paymentData);
+
+            } catch (emailError) {
+                console.error('Error sending payment success emails from webhook:', emailError);
+                // Don't throw error - payment was successful
             }
 
             response.status(200).json({
