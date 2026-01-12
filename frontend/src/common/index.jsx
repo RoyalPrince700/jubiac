@@ -1,4 +1,13 @@
-const backendDomain = import.meta.env.VITE_APP_BACKEND_URI
+const backendDomain =
+  import.meta.env.VITE_APP_BACKEND_URI ||
+  (import.meta.env.DEV ? 'http://localhost:8080' : '');
+
+if (!backendDomain) {
+  // In production this MUST be configured (e.g. https://jubiac.onrender.com)
+  console.error(
+    '[Config] Missing VITE_APP_BACKEND_URI. Set it in your deployment environment to your backend base URL.'
+  );
+}
 
 const SummaryApi = {
     signUp : {

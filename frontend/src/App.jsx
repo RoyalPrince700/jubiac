@@ -89,7 +89,14 @@ function App() {
   }, [notificationCount]);
 
   const signInWithGoogle = useCallback(() => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URI}/api/auth/google`;
+    const backendBase = import.meta.env.VITE_APP_BACKEND_URI;
+    if (!backendBase) {
+      console.error(
+        '[Auth] Missing VITE_APP_BACKEND_URI. Cannot start Google sign-in without the backend base URL.'
+      );
+      return;
+    }
+    window.location.href = `${backendBase.replace(/\/$/, '')}/api/auth/google`;
   }, []);
 
   const contextValue = useMemo(

@@ -19,7 +19,18 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         // Initialize socket connection
-        const socketConnection = io(import.meta.env.VITE_APP_BACKEND_URI || 'http://localhost:8080', {
+        const backendBase =
+            import.meta.env.VITE_APP_BACKEND_URI ||
+            (import.meta.env.DEV ? 'http://localhost:8080' : '');
+
+        if (!backendBase) {
+            console.error(
+                '[Socket] Missing VITE_APP_BACKEND_URI. Socket connection will not be initialized in production.'
+            );
+            return;
+        }
+
+        const socketConnection = io(backendBase, {
             withCredentials: true,
         });
 

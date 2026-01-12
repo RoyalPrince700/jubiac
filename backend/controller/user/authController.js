@@ -5,8 +5,18 @@ const googleAuth = passport.authenticate('google', {
 });
 
 const googleAuthCallback = (req, res, next) => {
-  const frontendUrl = process.env.FRONTEND_URL || 
-    (process.env.NODE_ENV === 'production' ? 'https://www.jubiac.com' : 'http://localhost:5173');
+  // IMPORTANT:
+  // This redirect is what sends users back to the frontend after Google OAuth.
+  // If FRONTEND_URL isn't set in production, we must NOT silently fall back to localhost.
+  const isProdLike =
+    process.env.NODE_ENV === 'production' ||
+    !!process.env.RENDER_EXTERNAL_URL ||
+    !!process.env.RENDER ||
+    !!process.env.VERCEL;
+
+  const frontendUrl =
+    process.env.FRONTEND_URL ||
+    (isProdLike ? 'https://www.jubiac.com' : 'http://localhost:5173');
 
   passport.authenticate('google', { session: false }, (err, data, info) => {
     if (err) {
