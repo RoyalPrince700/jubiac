@@ -1,5 +1,5 @@
 const { transporter, sender } = require('./mailtrap.config');
-const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_NOTIFICATION_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE, PAYMENT_SUCCESS_EMAIL_TEMPLATE } = require('./emailTemplates');
+const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_NOTIFICATION_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE, PAYMENT_SUCCESS_EMAIL_TEMPLATE, ORDER_STATUS_UPDATE_EMAIL_TEMPLATE } = require('./emailTemplates');
 
 const logSendAttempt = (label, options) => {
     console.log(`[Mailtrap][${label}] attempting send`, {
@@ -236,6 +236,55 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
     }
 };
 
+// Order Status Update Email
+const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
+    const getStatusClass = (status) => {
+        const statusClasses = {
+            'Pending': 'pending',
+            'Processing': 'processing',
+            'Shipped': 'shipped',
+            'Delivered': 'delivered',
+            'Cancelled': 'cancelled'
+        };
+        return statusClasses[status] || 'pending';
+    };
+
+    const getNextSteps = (status) => {
+        const steps = {
+            'Pending': '<p>Your order has been received and is awaiting processing. We will update you once it starts being prepared.</p>',
+            'Processing': '<p>Your order is currently being prepared. Our team is working to get it ready for shipment.</p>',
+            'Shipped': '<p>Great news! Your order has been shipped and is on its way to you. You will receive tracking information soon.</p>',
+            'Delivered': '<p>Your order has been successfully delivered! We hope you enjoy your purchase.</p>',
+            'Cancelled': '<p>Your order has been cancelled. If you have any questions, please contact our support team.</p>'
+        };
+        return steps[status] || '<p>Your order status has been updated. Please check your account for more details.</p>';
+    };
+
+    const html = ORDER_STATUS_UPDATE_EMAIL_TEMPLATE
+        .replace('{orderId}', orderData.orderId)
+        .replace('{orderDate}', orderData.orderDate)
+        .replace('{status}', orderData.status)
+        .replace('{statusClass}', getStatusClass(orderData.status))
+        .replace('{nextSteps}', getNextSteps(orderData.status))
+        .replace('{frontendUrl}', process.env.FRONTEND_URL || 'http://localhost:5173');
+
+    try {
+        const mailOptions = {
+            from: `"${sender.name}" <${sender.email}>`,
+            to: userEmail,
+            subject: `Order Status Update - ${orderData.status} | Jubiac`,
+            html,
+        };
+
+        logSendAttempt('order-status-update', mailOptions);
+        const response = await transporter.sendMail(mailOptions);
+        console.log('Order status update email sent to user:', response.messageId);
+    } catch (error) {
+        console.error('Error sending order status update email to user:', error);
+        // Do not throw; we don't want to block the status update
+    }
+};
+
 module.exports = {
     sendVerificationEmail,
     sendWelcomeEmail,
@@ -244,5 +293,6 @@ module.exports = {
     sendOrderNotificationEmail,
     sendUserOrderConfirmationEmail,
     sendPaymentSuccessEmail,
-    sendPaymentSuccessNotificationToAdmin
+    sendPaymentSuccessNotificationToAdmin,
+    sendOrderStatusUpdateEmail
 };

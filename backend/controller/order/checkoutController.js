@@ -2,7 +2,7 @@ const addToCartModel = require('../../models/cartProduct');
 const checkoutModel = require('../../models/checkoutModel'); // Adjust the path if needed
 const NotificationModel = require('../../models/notification'); // Import notification model
 const UserModel = require('../../models/userModel'); // Import user model to fetch HR users
-const { sendUserOrderConfirmationEmail } = require('../../mailtrap/emails'); // Import email function
+const { sendUserOrderConfirmationEmail, sendOrderNotificationEmail } = require('../../mailtrap/emails'); // Import email function
 
 const createCheckout = async (req, res) => {
   try {
@@ -82,6 +82,42 @@ const createCheckout = async (req, res) => {
         }
       } catch (emailError) {
         console.error('Error sending order confirmation email:', emailError);
+        // Don't throw error - we don't want to block the order creation
+      }
+
+      // Send order notification email to admin
+      try {
+        const adminEmail1 = process.env.ADMINEMAIL1;
+        const adminEmail2 = process.env.ADMINEMAIL2;
+        const adminNotificationEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+
+        // Collect all admin email addresses
+        const adminRecipients = [];
+        if (adminEmail1) adminRecipients.push(adminEmail1);
+        if (adminEmail2) adminRecipients.push(adminEmail2);
+        if (adminNotificationEmail && !adminRecipients.includes(adminNotificationEmail)) {
+          adminRecipients.push(adminNotificationEmail);
+        }
+
+        if (adminRecipients.length > 0) {
+          // Format the order data for admin notification
+          const adminOrderData = {
+            name: savedCheckout.name,
+            number: savedCheckout.number,
+            address: savedCheckout.address,
+            note: savedCheckout.note || 'N/A',
+            paymentMethod: savedCheckout.paymentMethod || 'Pay on Delivery',
+            total: `₦${savedCheckout.totalPrice}`,
+            cartItems: savedCheckout.cartItems
+          };
+
+          await sendOrderNotificationEmail(adminRecipients, adminOrderData);
+          console.log('Order notification email sent to admins:', adminRecipients.join(', '));
+        } else {
+          console.log('No admin email addresses configured for order notifications');
+        }
+      } catch (emailError) {
+        console.error('Error sending admin order notification:', emailError);
         // Don't throw error - we don't want to block the order creation
       }
     }

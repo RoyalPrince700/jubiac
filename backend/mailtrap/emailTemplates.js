@@ -207,11 +207,7 @@ const PAYMENT_SUCCESS_EMAIL_TEMPLATE = `
 </html>
 `;
 
-module.exports = {
-  VERIFICATION_EMAIL_TEMPLATE,
-  PASSWORD_RESET_SUCCESS_TEMPLATE,
-  PASSWORD_RESET_REQUEST_TEMPLATE,
-  ORDER_NOTIFICATION_TEMPLATE: `
+const ORDER_NOTIFICATION_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -259,6 +255,74 @@ module.exports = {
   <p style="color:#6b7280; font-size: 12px;">This message was sent automatically by Jubiac backend.</p>
 </body>
 </html>
-`,
+`;
+
+const ORDER_STATUS_UPDATE_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Status Update - Jubiac</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
+    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(to right, #3B82F6, #1D4ED8); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
+    .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 12px; margin: 10px 0; }
+    .status-pending { background-color: #FEF3C7; color: #92400E; }
+    .status-processing { background-color: #DBEAFE; color: #1E40AF; }
+    .status-shipped { background-color: #D1FAE5; color: #065F46; }
+    .status-delivered { background-color: #10B981; color: #FFFFFF; }
+    .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+    .order-details { background: #F8FAFC; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3B82F6; }
+    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+    .action-button { display: inline-block; padding: 12px 24px; background-color: #3B82F6; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📦 Order Status Update</h1>
+      <p>Your order status has been updated</p>
+    </div>
+
+    <div class="order-details">
+      <h3>Order Information</h3>
+      <p><strong>Order ID:</strong> {orderId}</p>
+      <p><strong>Order Date:</strong> {orderDate}</p>
+      <p><strong>Status:</strong> <span class="status-badge status-{statusClass}">{status}</span></p>
+    </div>
+
+    <div style="background: #F0F9FF; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0EA5E9;">
+      <h4 style="margin-top: 0; color: #0F172A;">What's Next?</h4>
+      {nextSteps}
+    </div>
+
+    <p>You can track your order and view all updates in your account dashboard.</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="{frontendUrl}/orders" class="action-button">View My Orders</a>
+    </div>
+
+    <p>If you have any questions about your order, please don't hesitate to contact our support team.</p>
+
+    <p>Best regards,<br>The Jubiac Team</p>
+  </div>
+
+  <div class="footer">
+    <p>This is an automated message from Jubiac. Please do not reply to this email.</p>
+    <p>Need help? Contact us at <a href="mailto:support@jubiac.com">support@jubiac.com</a></p>
+  </div>
+</body>
+</html>
+`;
+
+module.exports = {
+  VERIFICATION_EMAIL_TEMPLATE,
+  PASSWORD_RESET_SUCCESS_TEMPLATE,
+  PASSWORD_RESET_REQUEST_TEMPLATE,
+  ORDER_NOTIFICATION_TEMPLATE,
   ORDER_CONFIRMATION_EMAIL_TEMPLATE,
+  PAYMENT_SUCCESS_EMAIL_TEMPLATE,
+  ORDER_STATUS_UPDATE_EMAIL_TEMPLATE
 };

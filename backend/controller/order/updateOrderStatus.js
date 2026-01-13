@@ -1,5 +1,7 @@
 const orderModel = require("../../models/checkoutModel");
 const NotificationModel = require("../../models/notification"); // Import notification model
+const UserModel = require("../../models/userModel"); // Import user model
+const { sendOrderStatusUpdateEmail } = require("../../mailtrap/emails"); // Import email function
 
 async function updateOrderStatus(req, res) {
     console.log("Request User ID:", req.userId);
@@ -38,6 +40,22 @@ async function updateOrderStatus(req, res) {
         });
 
         await userNotification.save();
+
+        // Send email notification to user
+        try {
+            const user = await UserModel.findById(updatedOrder.userId);
+            if (user && user.email) {
+                await sendOrderStatusUpdateEmail(user.email, {
+                    orderId: updatedOrder._id,
+                    orderDate: updatedOrder.createdAt.toLocaleDateString(),
+                    status: status
+                });
+                console.log('Order status update email sent to user:', user.email);
+            }
+        } catch (emailError) {
+            console.error('Error sending order status update email:', emailError);
+            // Don't throw error - we don't want to block the status update
+        }
 
         // Emit real-time update via WebSocket
         const io = req.app.get('io');
