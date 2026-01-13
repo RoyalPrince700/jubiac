@@ -2,7 +2,7 @@
 require('dotenv').config({ path: __dirname + '/../.env' });
 
 const { transporter, sender } = require('../mailtrap/mailtrap.config');
-const { sendOrderStatusUpdateEmail, sendOrderNotificationEmail } = require('../mailtrap/emails');
+const { sendOrderStatusUpdateEmail, sendOrderNotificationEmail, sendWelcomeEmail } = require('../mailtrap/emails');
 
 async function main() {
   const testType = process.argv[2] || 'basic'; // 'basic' or 'status-update'
@@ -70,6 +70,14 @@ async function main() {
       ]
     });
     console.log('[Mailtrap smoke test] Admin order notification email sent!');
+    process.exit(0);
+  }
+
+  if (testType === 'welcome') {
+    // Test welcome email
+    console.log('[Mailtrap] Testing welcome email...');
+    await sendWelcomeEmail(to, 'Test User');
+    console.log('[Mailtrap smoke test] Welcome email sent!');
     process.exit(0);
   }
 

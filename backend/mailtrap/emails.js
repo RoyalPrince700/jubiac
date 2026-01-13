@@ -27,20 +27,74 @@ const sendVerificationEmail = async (email, token) => {
     }
 };
 
-const sendWelcomeEmail = async (email) => {
+const sendWelcomeEmail = async (email, name = 'there') => {
+    console.log('[EMAIL] 📧 sendWelcomeEmail called for:', email, 'name:', name);
     try {
+        const personalizedGreeting = name !== 'there' ? `Hi ${name}!` : 'Hello there!';
+        const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Jubiac!</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
+    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(to right, #10B981, #059669); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
+    .welcome-icon { font-size: 48px; color: #10B981; text-align: center; margin: 10px 0; }
+    .cta-button { display: inline-block; padding: 12px 24px; background-color: #10B981; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="welcome-icon">🎉</div>
+      <h1>Welcome to Jubiac!</h1>
+      <p>Your journey to amazing food starts here</p>
+    </div>
+
+    <h2>${personalizedGreeting}</h2>
+
+    <p>Thank you for joining the Jubiac community! We're thrilled to have you with us.</p>
+
+    <p>Here's what you can do to get started:</p>
+
+    <ul>
+      <li><strong>Browse our menu</strong> - Discover delicious meals from top restaurants</li>
+      <li><strong>Place your first order</strong> - Fast, reliable delivery to your doorstep</li>
+      <li><strong>Track your orders</strong> - Real-time updates on your delivery status</li>
+      <li><strong>Earn rewards</strong> - Get points on every order for future discounts</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" class="cta-button">Start Exploring</a>
+    </div>
+
+    <p>If you have any questions, feel free to reach out to our support team. We're here to help!</p>
+
+    <p>Welcome aboard,<br>The Jubiac Team</p>
+  </div>
+
+  <div class="footer">
+    <p>This is an automated welcome message from Jubiac. Please do not reply to this email.</p>
+  </div>
+</body>
+</html>`;
+
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: email,
-            subject: "Welcome to Jubiac!",
-            html: `<h1>Welcome to Jubiac!</h1><p>Thank you for joining us. We're excited to have you!</p>`,
+            subject: "🎉 Welcome to Jubiac - Your Food Journey Begins!",
+            html,
         };
 
         logSendAttempt('welcome', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log("Welcome email sent successfully:", response.messageId);
+        console.log("[EMAIL] ✅ Welcome email sent successfully:", response.messageId);
     } catch (error) {
-        console.error("Error sending welcome email:", error);
+        console.error("[EMAIL] ❌ Error sending welcome email:", error);
         throw new Error(`Error sending welcome email: ${error.message}`);
     }
 }

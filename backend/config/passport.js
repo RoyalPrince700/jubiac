@@ -54,14 +54,16 @@ passport.use(
           console.log('✅ [Passport] New user created:', user._id);
 
           // Send welcome email for first-time Google signup (non-blocking)
+          console.log('[GOOGLE SIGNUP] 📧 Sending welcome email to new Google user:', user.email);
           try {
             const recipientEmail = user.email;
             const recipientName = user.fullName || 'there';
+            console.log('[GOOGLE SIGNUP] 👤 User details - Email:', recipientEmail, 'Name:', recipientName);
             sendWelcomeEmail(recipientEmail, recipientName)
-              .then(() => console.log('📧 [Passport] Welcome email queued/sent for', recipientEmail))
-              .catch(err => console.error('❌ [Passport] Failed to send welcome email:', err.message));
+              .then(() => console.log('[GOOGLE SIGNUP] ✅ Welcome email sent successfully to', recipientEmail))
+              .catch(err => console.error('[GOOGLE SIGNUP] ❌ Failed to send welcome email:', err.message));
           } catch (e) {
-            console.error('❌ [Passport] Error triggering welcome email:', e);
+            console.error('[GOOGLE SIGNUP] ❌ Error triggering welcome email:', e);
           }
         } else {
           console.log('🔄 [Passport] Existing user found, checking avatar...');
