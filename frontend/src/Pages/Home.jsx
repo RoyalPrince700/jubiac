@@ -13,12 +13,12 @@ function Home() {
   return (
     <div className='mt-8 lg:mt-2'>
       <Hero />
-      {/* <CategoryList/> */}
-      {/* <BannerProduct/> */}
-      {/* <VerticalCardProduct category={"food"} /> */}
-      {/* <VerticalCardProduct  category={"necklace"} /> */}
-      {/* <VerticalCardProduct  category={"wears"} /> */}
-      <VerticalCardProduct  category={"home_appliance"} />
+      <div className='my-8'>
+        <CategoryList/>
+      </div>
+      <VerticalCardProduct  category={"baking"} heading={"Baking Essentials"} />
+      <VerticalCardProduct  category={"decoration"} heading={"Decoration Supplies"} />
+      <VerticalCardProduct  category={"equipment"} heading={"Professional Equipment"} />
 
 
 

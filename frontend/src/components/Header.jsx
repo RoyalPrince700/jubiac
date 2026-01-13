@@ -15,7 +15,6 @@ import { PiShoppingCartSimpleBold } from "react-icons/pi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdOutlineContactSupport } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
-import Logo from "../assets/wifmartlogo.png";
 
 const Header = () => {
   const [menuDisplay, setMenuDisplay] = useState(false);
@@ -92,56 +91,51 @@ const Header = () => {
 
   return (
     <div className='fixed top-0 left-0 right-0 z-50 bg-white flex items-center py-5 px-4 sm:px-10 lg:px-16 justify-between font-medium border-b border-gray-200'>
+        
+        {/* Search Bar Overlay */}
+        <div className={`absolute top-0 left-0 w-full h-full bg-white transition-all duration-300 flex items-center px-4 sm:px-10 lg:px-16 z-[60] ${showSearch ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+          <div className='flex items-center w-full max-w-4xl mx-auto gap-3'>
+            <div className='flex-1 flex items-center bg-gray-100 rounded-full px-4 py-2'>
+              <GrSearch className='text-gray-400 mr-2' />
+              <input 
+                type='text' 
+                placeholder='Search for baking tools, decorations...' 
+                className='bg-transparent flex-1 outline-none text-sm'
+                value={search}
+                onChange={handleSearch}
+                autoFocus={showSearch}
+              />
+            </div>
+            <RxCross1 onClick={()=>setShowSearch(false)} className='w-6 h-6 cursor-pointer text-gray-500 hover:text-black transition-colors' />
+          </div>
+        </div>
 
         <Link to='/'>
-          <img src={Logo} alt='Jubiac' className='h-6 sm:h-10 w-auto select-none' draggable={false} />
+          <span className='text-xl sm:text-2xl font-bold text-gray-800 select-none'>Jubiac</span>
         </Link>
 
         {/* Desktop Navigation */}
         <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-            <NavLink to='/' className='flex flex-col items-center gap-1'>
-                <p>SUIT</p>
+            <NavLink to='/product-category?category=baking' className='flex flex-col items-center gap-1'>
+                <p>BAKING</p>
               <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
             </NavLink>
             
-            <NavLink to='/native' className='flex flex-col items-center gap-1'>
-                <p>NATIVE</p>
+            <NavLink to='/product-category?category=decoration' className='flex flex-col items-center gap-1'>
+                <p>DECORATION</p>
                  <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
             </NavLink>
-            <NavLink to='/shoe' className='flex flex-col items-center gap-1'>
-                <p>SHOE</p>
+            <NavLink to='/product-category?category=equipment' className='flex flex-col items-center gap-1'>
+                <p>EQUIPMENT</p>
                  <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
             </NavLink>
         </ul>
 
-        {/* Mobile Navigation */}
-        <ul className='flex sm:hidden items-center gap-5 text-sm font-medium text-gray-800'>
-  <NavLink to='/' className='flex items-center'>
-    <p>SUIT</p>
-  </NavLink>
-
-  <NavLink to='/native' className='flex items-center'>
-    <p>NATIVE</p>
-  </NavLink>
-
-  <NavLink to='/shoe' className='flex items-center'>
-    <p>SHOE</p>
-  </NavLink>
-
-  <NavLink to='/cart' className='flex items-center gap-1'>
-    <p>CART</p>
-    <span className='bg-black text-white text-[10px] px-[6px] py-[2px] rounded-[4px] min-w-[18px] text-center leading-none'>
-      {getCartCount()}
-    </span>
-  </NavLink>
-</ul>
-
-
-
+        {/* Removed Mobile Navigation from here to move into Hamburger Menu */}
 
         <div className='flex items-center gap-7 sm:gap-6'>
-            {/* Desktop Icons */}
-            <GrSearch onClick={()=>setShowSearch(true)} className='hidden sm:block w-5 h-5 cursor-pointer' />
+            {/* Search Icon */}
+            <GrSearch onClick={()=>setShowSearch(true)} className='w-5 h-5 cursor-pointer' />
 
             <div className='group relative hidden sm:block'>
                 {user ? (
@@ -189,10 +183,24 @@ const Header = () => {
         <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-white z-[60]
             transition-all ${visible ? 'w-full' : 'w-0'}`}>
                 <div className='flex flex-col text-gray-600'>
-                    <div onClick={()=>setVisible(false)} className='cursor-pointer flex items-center gap-4 p-3'>
+                    <div onClick={()=>setVisible(false)} className='cursor-pointer flex items-center gap-4 p-3 border-b'>
                         <IoMdArrowDropdown className='h-4 w-4 rotate-180'/>
                         <p>Back</p>
                     </div>
+
+                    {/* Navigation Links in Mobile Menu */}
+                    <div className='flex flex-col border-b sm:hidden'>
+                        <NavLink onClick={()=>setVisible(false)} to='/product-category?category=baking' className='py-3 pl-6 hover:bg-gray-50 border-b font-medium text-gray-800'>BAKING</NavLink>
+                        <NavLink onClick={()=>setVisible(false)} to='/product-category?category=decoration' className='py-3 pl-6 hover:bg-gray-50 border-b font-medium text-gray-800'>DECORATION</NavLink>
+                        <NavLink onClick={()=>setVisible(false)} to='/product-category?category=equipment' className='py-3 pl-6 hover:bg-gray-50 border-b font-medium text-gray-800'>EQUIPMENT</NavLink>
+                        <NavLink onClick={()=>setVisible(false)} to='/cart' className='py-3 pl-6 hover:bg-gray-50 flex items-center gap-2 font-medium text-gray-800'>
+                            CART
+                            <span className='bg-black text-white text-[10px] px-[6px] py-[2px] rounded-[4px] min-w-[18px] text-center leading-none'>
+                                {getCartCount()}
+                            </span>
+                        </NavLink>
+                    </div>
+
                     {user ? (
                         <>
                             <div className='py-4 px-6 bg-gray-50 flex items-center gap-3 border-b'>

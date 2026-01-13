@@ -3,7 +3,7 @@
 Jubiac is an e‑commerce web app focused on baking and decoration equipment. We sell high-quality baking tools, decorating supplies, kitchen equipment, and related accessories. The goal is a fast, clean shopping experience from discovery to checkout.
 
 ## Features
-- Browse fashion categories and sub‑categories
+- Browse baking and decoration categories and sub‑categories
 - Product search and filtering
 - Detailed product pages with images and variants
 - Shopping cart and secure checkout

@@ -124,124 +124,135 @@ const UploadProduct = ({
   }
 
   return (
-    <div className='fixed bg-opacity-35 flex justify-center mt-10 items-center bg-gray-800
-     w-full h-full bottom-0 top-0 left-0 right-0'>
-        <div className='bg-gray-700 rounded p-4 w-full max-w-2xl h-full max-h-[80%]
-        overflow-hidden'>
+    <div className='fixed bg-slate-900 bg-opacity-50 flex justify-center mt-10 items-center 
+     w-full h-full bottom-0 top-0 left-0 right-0 z-[100]'>
+        <div className='bg-white rounded-2xl p-6 w-full max-w-2xl h-full max-h-[85%]
+        overflow-hidden shadow-2xl border border-gray-100'>
             {/* Modal header with close button */}
-            <div className='flex justify-between items-center pb-3'>
-                <h2 className='font-bold text-lg '>Upload Product</h2> 
+            <div className='flex justify-between items-center pb-4 border-b border-gray-100'>
+                <h2 className='font-bold text-xl text-gray-800'>Upload Product</h2> 
                 <div className='w-fit cursor-pointer ml-auto 
-                text-2xl hover:text-red-600' onClick={onClose}>
+                text-2xl text-gray-400 hover:text-red-600 transition-colors' onClick={onClose}>
                     <CgClose/>  {/* Close modal icon */}
                 </div>
             </div>
 
             {/* Form for uploading product */}
-            <form className='grid p-4 gap-2 overflow-y-scroll h-full pb-5' onSubmit={handleSubmit}>
+            <form className='grid p-2 gap-4 overflow-y-scroll h-full pb-10 custom-scrollbar' onSubmit={handleSubmit}>
               {/* Input field for product name */}
-              <label htmlFor='productName'>Product Name</label>
-              <input 
-                type='text' 
-                id='productName' 
-                placeholder='Enter Product name' 
-                name='productName'
-                value={data.productName}
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                required
-              />
+              <div className='flex flex-col gap-1'>
+                <label htmlFor='productName' className='text-sm font-semibold text-gray-700'>Product Name</label>
+                <input 
+                  type='text' 
+                  id='productName' 
+                  placeholder='Enter Product name' 
+                  name='productName'
+                  value={data.productName}
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                  required
+                />
+              </div>
 
               {/* Input field for brand name */}
-              <label htmlFor='brandName' className='mt-3'>Brand Name</label>
-              <input 
-                type='text' 
-                id='brandName' 
-                placeholder='Enter Brand Name' 
-                value={data.brandName}
-                name='brandName'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                required
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='brandName' className='text-sm font-semibold text-gray-700'>Brand Name</label>
+                <input 
+                  type='text' 
+                  id='brandName' 
+                  placeholder='Enter Brand Name' 
+                  value={data.brandName}
+                  name='brandName'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                  required
+                />
+              </div>
 
               {/* Dropdown for selecting product category */}
-              <label htmlFor='category' className='mt-3 '>Category</label>
-              <select value={data.category} name='category' onChange={handleOnChange} className='p-2 bg-slate-700 border rounded'>
-                <option value={""}>Select Category</option>
-                {
-                  productCategory.map((el, index) => {
-                    return (
-                      <option value={el.value} key={el.value + index}>{el.value}</option>
-                    )
-                  })
-                }
-              </select>
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='category' className='text-sm font-semibold text-gray-700'>Category</label>
+                <select value={data.category} name='category' onChange={handleOnChange} className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'>
+                  <option value={""}>Select Category</option>
+                  {
+                    productCategory.map((el, index) => {
+                      return (
+                        <option value={el.value} key={el.value + index}>{el.value}</option>
+                      )
+                    })
+                  }
+                </select>
+              </div>
 
                 {/* Dropdown for selecting product SUB category */}
-                <label htmlFor='category' className='mt-3 '>Sub Category</label>
-              <select value={data.subCategory} name='subCategory' onChange={handleOnChange} 
-              className='p-2 bg-slate-700 border rounded'>
-                <option value={""}>Select Sub Category</option>
-                {
-                  productSubCategory.map((el, index) => {
-                    return (
-                      <option value={el.value} key={el.value + index}>{el.value}</option>
-                    )
-                  })
-                }
-              </select>
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='subCategory' className='text-sm font-semibold text-gray-700'>Sub Category</label>
+                <select value={data.subCategory} name='subCategory' onChange={handleOnChange} 
+                className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'>
+                  <option value={""}>Select Sub Category</option>
+                  {
+                    productSubCategory.map((el, index) => {
+                      return (
+                        <option value={el.value} key={el.value + index}>{el.value}</option>
+                      )
+                    })
+                  }
+                </select>
+              </div>
 
                 {/* Dropdown for selecting product deal */}
-                <label htmlFor='hotDeal' className='mt-3 '>Hot deal</label>
-              <select value={data.hotDeal} name='hotDeal' onChange={handleOnChange} 
-              className='p-2 bg-slate-700 border rounded'>
-                <option value={""}>Select Deal</option>
-                {
-                  productDeal.map((el, index) => {
-                    return (
-                      <option value={el.value} key={el.value + index}>{el.value}</option>
-                    )
-                  })
-                }
-              </select>
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='hotDeal' className='text-sm font-semibold text-gray-700'>Hot deal</label>
+                <select value={data.hotDeal} name='hotDeal' onChange={handleOnChange} 
+                className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'>
+                  <option value={""}>Select Deal</option>
+                  {
+                    productDeal.map((el, index) => {
+                      return (
+                        <option value={el.value} key={el.value + index}>{el.value}</option>
+                      )
+                    })
+                  }
+                </select>
+              </div>
 
               {/* File upload section for product image */}
-              <label htmlFor='productImage' className='mt-3 '>Product Image</label>
-              <label htmlFor='uploadImageInput'>
-                <div className='p-2 cursor-pointer bg-slate-700 border rounded h-32 w-full flex justify-center items-center'>
-                  <div className='text-slate-500 flex justify-center items-center flex-col gap-2'>
-                    <span className='text-4xl'> <FaCloudUploadAlt /></span>  {/* Cloud upload icon */}
-                    <p className='text-sm'>Upload Product Image</p>
-                    <input type='file' id='uploadImageInput' className='hidden'
-                      onChange={handleUploadProduct}/>  {/* Hidden file input */}
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='productImage' className='text-sm font-semibold text-gray-700'>Product Image</label>
+                <label htmlFor='uploadImageInput'>
+                  <div className='p-4 cursor-pointer bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl h-32 w-full flex justify-center items-center hover:bg-gray-100 transition-all'>
+                    <div className='text-gray-400 flex justify-center items-center flex-col gap-2'>
+                      <span className='text-4xl'> <FaCloudUploadAlt /></span>  {/* Cloud upload icon */}
+                      <p className='text-sm font-medium'>Upload Product Image</p>
+                      <input type='file' id='uploadImageInput' className='hidden'
+                        onChange={handleUploadProduct}/>  {/* Hidden file input */}
+                    </div>
                   </div>
-                </div>
-              </label>
+                </label>
+              </div>
 
               {/* Display uploaded images */}
-              <div>
+              <div className='mt-2'>
                 {
                   data?.productImage[0] ? (
-                    <div className='flex items-center gap-2'>
+                    <div className='flex items-center gap-3 flex-wrap'>
                       {
                         data.productImage.map((el, index) => {
                           return (
-                            <div className='relative group'>
+                            <div className='relative group' key={index}>
                               <img src={el} 
                                 alt={el}
                                 width={80} 
                                 height={80} 
-                                className='bg-slate-700 cursor-pointer' 
+                                className='bg-gray-50 border border-gray-100 rounded-lg cursor-pointer hover:scale-105 transition-transform' 
                                 onClick={() => {
                                   setOpenFullScreenImage(true)
                                   setFullScreenImage(el)
                                 }}/>
-                              <div className='absolute bg-red-600 rounded-full
-                               bottom-0 right-0 p-1 text-white hidden 
-                               group-hover:block cursor-pointer'
+                              <div className='absolute bg-red-500 rounded-full
+                               -top-2 -right-2 p-1.5 text-white shadow-md hover:bg-red-600 transition-colors cursor-pointer'
                                onClick={() => handleDeleteProductImage(index)}>
-                                <MdDelete/>  {/* Delete icon */}
+                                <MdDelete className='text-xs'/>  {/* Delete icon */}
                               </div>
                             </div>
                           )
@@ -249,113 +260,127 @@ const UploadProduct = ({
                       }
                     </div>
                   ) : (
-                    <p className='text-red-600 text-xs'>*Please Upload Product Image</p>
+                    <p className='text-red-500 text-xs font-medium'>*Please Upload Product Image</p>
                   )
                 }
               </div>
 
               {/* Input fields for price and selling price */}
-              <label htmlFor='price' className='mt-3'>Price :</label>
-              <input 
-                type='number' 
-                id='price' 
-                placeholder='Enter Price' 
-                value={data.price}
-                name='price'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='price' className='text-sm font-semibold text-gray-700'>Price :</label>
+                <input 
+                  type='number' 
+                  id='price' 
+                  placeholder='Enter Price' 
+                  value={data.price}
+                  name='price'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                />
+              </div>
 
-              <label htmlFor='sellingPrice' className='mt-3'>Selling Price :</label>
-              <input 
-                type='number' 
-                id='sellingPrice' 
-                placeholder='Enter selling Price' 
-                value={data.sellingPrice}
-                name='sellingPrice'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='sellingPrice' className='text-sm font-semibold text-gray-700'>Selling Price :</label>
+                <input 
+                  type='number' 
+                  id='sellingPrice' 
+                  placeholder='Enter selling Price' 
+                  value={data.sellingPrice}
+                  name='sellingPrice'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                />
+              </div>
 
                {/* Input fields for item left  */}
-               <label htmlFor='price' className='mt-3'>Item :</label>
-              <input 
-                type='number' 
-                id='item' 
-                placeholder='Enter item left' 
-                value={data.item}
-                name='item'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='item' className='text-sm font-semibold text-gray-700'>Item :</label>
+                <input 
+                  type='number' 
+                  id='item' 
+                  placeholder='Enter item left' 
+                  value={data.item}
+                  name='item'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                />
+              </div>
 
               {/* Text area for product description */}
-              <label htmlFor='description' className='mt-3'>Description :</label>
-              <textarea className='h-28 bg-slate-700 border resize-none p-1' 
-                placeholder='Enter product Description' rows={3}
-                onChange={handleOnChange} name='description'
-                value={data.description}>
-              </textarea>
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='description' className='text-sm font-semibold text-gray-700'>Description :</label>
+                <textarea className='h-28 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all resize-none p-3' 
+                  placeholder='Enter product Description' rows={3}
+                  onChange={handleOnChange} name='description'
+                  value={data.description}>
+                </textarea>
+              </div>
 
                 {/* Dropdown for selecting product status */}
-                <label htmlFor='productStatus' className='mt-3 '>Product Status</label>
-              <select value={data.productStatus} name='productStatus' onChange={handleOnChange} 
-              className='p-2 bg-slate-700 border rounded'>
-                <option value={""}>Select Product Status</option>
-                {
-                  productStatus.map((el, index) => {
-                    return (
-                      <option value={el.value} key={el.value + index}>{el.value}</option>
-                    )
-                  })
-                }
-              </select>
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='productStatus' className='text-sm font-semibold text-gray-700'>Product Status</label>
+                <select value={data.productStatus} name='productStatus' onChange={handleOnChange} 
+                className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'>
+                  <option value={""}>Select Product Status</option>
+                  {
+                    productStatus.map((el, index) => {
+                      return (
+                        <option value={el.value} key={el.value + index}>{el.value}</option>
+                      )
+                    })
+                  }
+                </select>
+              </div>
 
                {/* Input field for seller name */}
-               <label htmlFor='brandName' className='mt-3'>Seller Name</label>
-              <input 
-                type='text' 
-                id='sellerName' 
-                placeholder='Enter Seller Brand Name' 
-                value={data.sellerName}
-                name='sellerName'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                required
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='sellerName' className='text-sm font-semibold text-gray-700'>Seller Name</label>
+                <input 
+                  type='text' 
+                  id='sellerName' 
+                  placeholder='Enter Seller Name' 
+                  value={data.sellerName}
+                  name='sellerName'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                  required
+                />
+              </div>
+
               {/* Input field for seller brand name */}
-               <label htmlFor='brandName' className='mt-3'>Seller Brand Name</label>
-              <input 
-                type='text' 
-                id='sellerBrandName' 
-                placeholder='Enter Seller Brand Name' 
-                value={data.sellerBrandName}
-                name='sellerBrandName'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                required
-              />
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='sellerBrandName' className='text-sm font-semibold text-gray-700'>Seller Brand Name</label>
+                <input 
+                  type='text' 
+                  id='sellerBrandName' 
+                  placeholder='Enter Seller Brand Name' 
+                  value={data.sellerBrandName}
+                  name='sellerBrandName'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                  required
+                />
+              </div>
 
               {/* Input field for seller Phone Number */}
-              <label htmlFor='brandName' className='mt-3'>Seller Phone Number</label>
-              <input 
-                type='text' 
-                id='sellerPhoneNumber' 
-                placeholder='Enter Seller Phone Number' 
-                value={data.sellerPhoneNumber}
-                name='sellerPhoneNumber'
-                onChange={handleOnChange}
-                className='p-2 bg-slate-700 border rounded'
-                required
-              />
-
-                
+              <div className='flex flex-col gap-1 mt-1'>
+                <label htmlFor='sellerPhoneNumber' className='text-sm font-semibold text-gray-700'>Seller Phone Number</label>
+                <input 
+                  type='text' 
+                  id='sellerPhoneNumber' 
+                  placeholder='Enter Seller Phone Number' 
+                  value={data.sellerPhoneNumber}
+                  name='sellerPhoneNumber'
+                  onChange={handleOnChange}
+                  className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'
+                  required
+                />
+              </div>
 
               {/* Submit button */}
-              <button className='px-3 hover:bg-red-700 text-white py-2 mb-10 bg-red-600'>Upload Product</button>
+              <button className='px-6 py-3 rounded-full font-bold text-white mb-10 bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95 mt-4'>
+                Upload Product
+              </button>
             </form>
 
         </div>

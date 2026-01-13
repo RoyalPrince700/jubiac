@@ -32,28 +32,18 @@ const transporter = nodemailer.createTransport({
 // Use either MAILTRAP_FROM_EMAIL or MAILTRAP_FROM
 const fromEmail = process.env.MAILTRAP_FROM_EMAIL || process.env.MAILTRAP_FROM || "noreply@jubiac.com";
 
-// Debug the mailer configuration (safe values only)
-console.log('[MAILTRAP CONFIG]', {
-    environment: process.env.NODE_ENV || 'development',
-    host,
-    port,
-    secure: port === 465,
-    userSet: Boolean(user),
-    passSet: Boolean(pass),
-    fromEmail: fromEmail
-});
 
 // Verify the connection on startup (non-blocking)
 if (user && pass) {
     transporter.verify((error, success) => {
         if (error) {
-            console.error('[MAILTRAP ERROR] Connection verification failed:', error.message);
+            // Connection verification failed - silently handle
         } else {
-            console.log('[MAILTRAP SUCCESS] Server is ready to take our messages');
+            // Server is ready to take messages - silently handle
         }
     });
 } else {
-    console.warn('[MAILTRAP WARNING] SMTP credentials missing. Emails will fail to send.');
+    // SMTP credentials missing. Emails will fail to send.
 }
 
 const sender = {

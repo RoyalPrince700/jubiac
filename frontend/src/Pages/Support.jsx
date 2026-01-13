@@ -14,7 +14,7 @@ const Support = () => {
     },
     {
       question: 'What payment methods are available?',
-      answer: 'Currently, we only offer transfer. Online payment options will be available soon.',
+      answer: 'We only accept online payment methods.',
     },
     {
       question: 'How long does delivery take?',

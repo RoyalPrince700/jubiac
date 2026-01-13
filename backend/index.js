@@ -96,21 +96,6 @@ app.use("/api", router);
 // Start the server
 const PORT = process.env.PORT || 8080;
 
-// Debug production environment variables (safe values only)
-console.log('[PRODUCTION DEBUG] Environment check:', {
-    NODE_ENV: process.env.NODE_ENV,
-    PORT: PORT,
-    FRONTEND_URL: process.env.FRONTEND_URL,
-    MAILTRAP_PROD_HOST: process.env.MAILTRAP_PROD_HOST,
-    MAILTRAP_PROD_PORT: process.env.MAILTRAP_PROD_PORT,
-    MAILTRAP_PROD_USER_SET: !!process.env.MAILTRAP_PROD_USER,
-    MAILTRAP_PROD_PASS_SET: !!process.env.MAILTRAP_PROD_PASS,
-    MAILTRAP_FROM_EMAIL: process.env.MAILTRAP_FROM_EMAIL,
-    ADMIN_NOTIFICATION_EMAIL: process.env.ADMIN_NOTIFICATION_EMAIL,
-    ADMINEMAIL1: process.env.ADMINEMAIL1,
-    MONGODB_URI_SET: !!process.env.MONGODB_URI,
-    TOKEN_SECRET_KEY_SET: !!process.env.TOKEN_SECRET_KEY
-});
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

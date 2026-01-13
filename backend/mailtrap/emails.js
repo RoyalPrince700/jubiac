@@ -1,14 +1,6 @@
 const { transporter, sender } = require('./mailtrap.config');
 const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_NOTIFICATION_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE, PAYMENT_SUCCESS_EMAIL_TEMPLATE, ORDER_STATUS_UPDATE_EMAIL_TEMPLATE } = require('./emailTemplates');
 
-const logSendAttempt = (label, options) => {
-    console.log(`[Mailtrap][${label}] attempting send`, {
-        to: options.to,
-        subject: options.subject,
-        from: options.from,
-    });
-};
-
 const sendVerificationEmail = async (email, token) => {
     try {
         const mailOptions = {
@@ -18,9 +10,7 @@ const sendVerificationEmail = async (email, token) => {
             html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", token),
         };
 
-        logSendAttempt('verification', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log("Verification email sent successfully:", response.messageId);
     } catch (error) {
         console.error("Error sending verification email:", error);
         throw new Error(`Error sending verification email: ${error.message}`);
@@ -28,12 +18,9 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendWelcomeEmail = async (email, name = 'there') => {
-    console.log('[PRODUCTION EMAIL] 📧 sendWelcomeEmail called for:', email, 'name:', name);
-    console.log('[PRODUCTION EMAIL] 🔧 Mailtrap config check - host:', process.env.MAILTRAP_PROD_HOST, 'user exists:', !!process.env.MAILTRAP_PROD_USER);
     try {
         const personalizedGreeting = name !== 'there' ? `Hi ${name}!` : 'Hello there!';
         const frontendUrl = process.env.FRONTEND_URL || 'https://jubiac.vercel.app'; // Default to Vercel URL
-        console.log("[EMAIL] 📧 Using frontend URL for welcome email:", frontendUrl);
 
         const html = `
 <!DOCTYPE html>
@@ -94,19 +81,9 @@ const sendWelcomeEmail = async (email, name = 'there') => {
             html,
         };
 
-        logSendAttempt('welcome', mailOptions);
-        console.log("[EMAIL] 🚀 About to send welcome email via transporter...");
         const response = await transporter.sendMail(mailOptions);
-        console.log("[EMAIL] ✅ Welcome email sent successfully:", response.messageId);
         return response;
     } catch (error) {
-        console.error("[EMAIL] ❌ Error sending welcome email:", error);
-        console.error("[EMAIL] ❌ Error details:", {
-            message: error.message,
-            code: error.code,
-            command: error.command,
-            errno: error.errno
-        });
         throw new Error(`Error sending welcome email: ${error.message}`);
     }
 }
@@ -120,11 +97,8 @@ const sendPasswordResetEmail = async (email, resetURL) => {
             html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
         };
 
-        logSendAttempt('password-reset', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log("Password reset email sent successfully:", response.messageId);
     } catch (error) {
-        console.error("Error sending password reset email:", error);
         throw new Error(`Error sending password reset email: ${error.message}`);
     }
 }
@@ -138,11 +112,8 @@ const sendResetSuccessfulEmail = async (email) => {
             html: PASSWORD_RESET_SUCCESS_TEMPLATE,
         };
 
-        logSendAttempt('password-reset-success', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log("Password reset successful email sent successfully:", response.messageId);
     } catch (error) {
-        console.error("Error sending password reset successful email:", error);
         throw new Error(`Error sending password reset successful email: ${error}`);
     }
 }
@@ -151,7 +122,6 @@ module.exports = { sendVerificationEmail,sendWelcomeEmail,sendPasswordResetEmail
 
 // Admin order notification
 const sendOrderNotificationEmail = async (recipients, payload) => {
-    console.log('[EMAIL] 📧 sendOrderNotificationEmail called for recipients:', recipients, 'customer:', payload.name);
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
@@ -183,18 +153,14 @@ const sendOrderNotificationEmail = async (recipients, payload) => {
             html,
         };
 
-        logSendAttempt('admin-order-notification', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log('Admin order notification email sent:', response.messageId);
     } catch (error) {
-        console.error('Error sending admin order notification:', error);
         // Do not throw; we don't want to block user flow
     }
 };
 
 // User order confirmation email
 const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
-    console.log('[EMAIL] 📧 sendUserOrderConfirmationEmail called for:', userEmail, 'order:', payload._id);
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
@@ -224,18 +190,14 @@ const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
             html,
         };
 
-        logSendAttempt('user-order-confirmation', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log('User order confirmation email sent:', response.messageId);
     } catch (error) {
-        console.error('Error sending user order confirmation email:', error);
         // Do not throw; we don't want to block user flow
     }
 };
 
 // User payment success email
 const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
-    console.log('[EMAIL] 📧 sendPaymentSuccessEmail called for:', userEmail, 'transaction:', paymentData.transactionId);
     const orderDetails = paymentData.orderId ? `
       <h4>Order Information</h4>
       <p><strong>Order ID:</strong> ${paymentData.orderId}</p>
@@ -257,21 +219,16 @@ const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
             html,
         };
 
-        logSendAttempt('payment-success-user', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log('Payment success email sent to user:', response.messageId);
     } catch (error) {
-        console.error('Error sending payment success email to user:', error);
         // Do not throw; we don't want to block the payment flow
     }
 };
 
 // Admin payment success notification
 const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
-    console.log('[EMAIL] 📧 sendPaymentSuccessNotificationToAdmin called for transaction:', paymentData.transactionId);
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
     if (!adminEmail) {
-        console.log('ADMIN_NOTIFICATION_EMAIL not configured, skipping admin notification');
         return;
     }
 
@@ -297,18 +254,14 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
             html,
         };
 
-        logSendAttempt('payment-success-admin', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log('Payment success notification sent to admin:', response.messageId);
     } catch (error) {
-        console.error('Error sending payment success notification to admin:', error);
         // Do not throw; we don't want to block the payment flow
     }
 };
 
 // Order Status Update Email
 const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
-    console.log('[EMAIL] 📧 sendOrderStatusUpdateEmail called for:', userEmail, 'order:', orderData.orderId);
     const getStatusClass = (status) => {
         const statusClasses = {
             'Pending': 'pending',
@@ -347,11 +300,8 @@ const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
             html,
         };
 
-        logSendAttempt('order-status-update', mailOptions);
         const response = await transporter.sendMail(mailOptions);
-        console.log('Order status update email sent to user:', response.messageId);
     } catch (error) {
-        console.error('Error sending order status update email to user:', error);
         // Do not throw; we don't want to block the status update
     }
 };

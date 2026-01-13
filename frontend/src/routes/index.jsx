@@ -37,8 +37,6 @@ import SalesPage from "../Pages/SalesPage";
 import OrdersPage from "../Pages/OrdersPage";
 import AssignedOrders from "../Pages/AssignedOrders";
 import NotificationsPage from "../Pages/NotificationPage";
-import Native from "../Pages/Native";
-import Shoe from "../Pages/Shoe";
 
 const router = createBrowserRouter([
     {
@@ -48,13 +46,7 @@ const router = createBrowserRouter([
             {
                 path: "",
                 element: <Home />,
-            }, {
-                path: "native",
-                element: <Native />,
-            },{
-                path: "shoe",
-                element: <Shoe />,
-            },
+            }, 
             {
                 path: "login",
                 element: <Login />,

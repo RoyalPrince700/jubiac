@@ -9,24 +9,24 @@ const AdminProductCard = ({ data, fetchdata }) => {
     const [deleteProduct, setDeleteProduct] = useState(false); // State for managing delete modal visibility
 
     return (
-        <div className="bg-gray-900 p-4 rounded shadow-md w-48 hover:shadow-lg transition-shadow">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 w-48 hover:shadow-md transition-all">
             {/* Product Image */}
-            <div className="w-full h-32 flex justify-center items-center mb-2">
+            <div className="w-full h-32 flex justify-center items-center mb-2 overflow-hidden rounded-lg bg-gray-50">
                 <img
                     src={data?.productImage[0] || '/placeholder-image.png'} // Fallback image
-                    className="object-cover w-full h-full rounded"
+                    className="object-contain w-full h-full hover:scale-110 transition-transform"
                     alt={data?.productName || "Product Image"}
                 />
             </div>
 
             {/* Product Name */}
-            <h1 className="text-gray-100 text-sm font-semibold mb-2 truncate">
+            <h1 className="text-gray-800 text-sm font-semibold mb-1 truncate">
                 {data?.productName || "Unnamed Product"}
             </h1>
 
             {/* Product Price */}
             {data.sellingPrice > 0 && (
-                <p className="text-white font-bold text-sm mb-2">
+                <p className="text-gray-900 font-bold text-base mb-2">
                     {displayNGNCurrency(data.sellingPrice)}
                 </p>
             )}
