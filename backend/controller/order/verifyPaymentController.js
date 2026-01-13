@@ -3,7 +3,7 @@ const orderModel = require('../../models/orderProductModel');
 const checkoutModel = require('../../models/checkoutModel');
 const addToCartModel = require('../../models/cartProduct');
 const UserModel = require('../../models/userModel');
-const { sendPaymentSuccessEmail, sendPaymentSuccessNotificationToAdmin } = require('../../mailtrap/emails');
+const { sendPaymentSuccessEmail, sendPaymentSuccessNotificationToAdmin, sendUserOrderConfirmationEmail } = require('../../mailtrap/emails');
 
 const verifyPaymentController = async (request, response) => {
     try {
@@ -50,7 +50,12 @@ const verifyPaymentController = async (request, response) => {
                         paymentData.customerEmail = user.email;
                         console.log('[SUCCESS PAGE] 📧 Sending payment success email to user for existing order:', user.email);
                         await sendPaymentSuccessEmail(user.email, paymentData);
-                        console.log('[SUCCESS PAGE] ✅ Existing order - User payment success email sent successfully');
+
+                        // Also send order confirmation email
+                        console.log('[SUCCESS PAGE] 📧 Sending order confirmation email to user for existing order:', user.email);
+                        await sendUserOrderConfirmationEmail(user.email, existingCheckout);
+
+                        console.log('[SUCCESS PAGE] ✅ Existing order - User emails (payment + confirmation) sent successfully');
                     } else {
                         console.log('[SUCCESS PAGE] ⚠️ Existing order - User email missing or user not found, skipping user email');
                     }
@@ -138,9 +143,9 @@ const verifyPaymentController = async (request, response) => {
 
             // Send payment success emails
             console.log('[PRODUCTION SUCCESS PAGE] 🚀 Starting email sends for NEW order');
-            console.log('[PRODUCTION SUCCESS PAGE] 👤 User ID:', userId, 'Transaction:', transaction_id);
             try {
                 const userId = meta.userId || request.userId;
+                console.log('[PRODUCTION SUCCESS PAGE] 👤 User ID:', userId, 'Transaction:', transaction_id);
                 const paymentData = {
                     transactionId: transactionData.id.toString(),
                     paymentMethod: 'Flutterwave Card',
@@ -166,7 +171,12 @@ const verifyPaymentController = async (request, response) => {
                     if (user && user.email) {
                         console.log('[SUCCESS PAGE] 📧 Sending payment success email to user:', user.email);
                         await sendPaymentSuccessEmail(user.email, paymentData);
-                        console.log('[SUCCESS PAGE] ✅ User payment success email sent successfully');
+                        
+                        // Also send order confirmation email
+                        console.log('[SUCCESS PAGE] 📧 Sending order confirmation email to user:', user.email);
+                        await sendUserOrderConfirmationEmail(user.email, savedCheckout);
+                        
+                        console.log('[SUCCESS PAGE] ✅ User emails (payment + confirmation) sent successfully');
                     } else {
                         console.log('[SUCCESS PAGE] ⚠️ User email missing or user not found, skipping user email');
                     }

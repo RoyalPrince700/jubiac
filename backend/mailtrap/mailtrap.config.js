@@ -8,10 +8,10 @@ dotenv.config({ path: '../.env' });
 const isProd = process.env.NODE_ENV === 'production';
 
 // Production SMTP configuration
-// Mailtrap Sending: host is usually 'send.smtp.mailtrap.io'
-// Mailtrap Sandbox: host is usually 'sandbox.smtp.mailtrap.io'
-const host = process.env.MAILTRAP_PROD_HOST || 'send.smtp.mailtrap.io';
-const port = parseInt(process.env.MAILTRAP_PROD_PORT) || 587;
+// Mailtrap Sending: host is usually 'send.smtp.mailtrap.io' or 'live.smtp.mailtrap.io'
+// Port options: 587 (TLS), 465 (SSL), 2525 (Alternative TLS)
+const host = process.env.MAILTRAP_PROD_HOST || 'live.smtp.mailtrap.io';
+const port = parseInt(process.env.MAILTRAP_PROD_PORT) || 2525; // Defaulting to 2525 as it's often more reliable on cloud providers
 const user = process.env.MAILTRAP_PROD_USER;
 const pass = process.env.MAILTRAP_PROD_PASS;
 
@@ -23,8 +23,10 @@ const transporter = nodemailer.createTransport({
         user,
         pass,
     },
-    // Add connection timeout
-    connectionTimeout: 10000, // 10 seconds
+    // Increased connection timeout for cloud provider reliability
+    connectionTimeout: 30000, // 30 seconds
+    greetingTimeout: 30000,
+    socketTimeout: 30000,
 });
 
 // Use either MAILTRAP_FROM_EMAIL or MAILTRAP_FROM
