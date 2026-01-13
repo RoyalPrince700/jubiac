@@ -20,8 +20,58 @@ const verifyPaymentController = async (request, response) => {
         // Check if checkout already exists with this paymentId
         const existingCheckout = await checkoutModel.findOne({ "paymentDetails.paymentId": transaction_id });
         if (existingCheckout) {
+            // Still send emails even if order already processed (for success page trigger)
+            console.log('[SUCCESS PAGE] 🔄 Existing checkout found, sending emails for transaction:', transaction_id);
+            try {
+                const userId = existingCheckout.userId;
+                const paymentData = {
+                    transactionId: transaction_id,
+                    paymentMethod: existingCheckout.paymentMethod || 'Flutterwave Card',
+                    amount: existingCheckout.totalPrice,
+                    paymentDate: existingCheckout.createdAt?.toLocaleString() || new Date().toLocaleString(),
+                    orderId: existingCheckout._id,
+                    customerEmail: null, // Will be set from user lookup
+                    itemCount: existingCheckout.cartItems?.length || 0
+                };
+
+                console.log('[SUCCESS PAGE] 📧 Preparing email sends for EXISTING order:', {
+                    userId,
+                    orderId: existingCheckout._id,
+                    adminEmail: process.env.ADMIN_NOTIFICATION_EMAIL,
+                    itemCount: paymentData.itemCount,
+                    transactionId: transaction_id
+                });
+
+                // Send email to user if userId exists
+                if (userId) {
+                    const user = await UserModel.findById(userId);
+                    console.log('[SUCCESS PAGE] 👤 Existing order - User lookup result:', { userId, userEmail: user?.email, userFound: !!user });
+                    if (user && user.email) {
+                        paymentData.customerEmail = user.email;
+                        console.log('[SUCCESS PAGE] 📧 Sending payment success email to user for existing order:', user.email);
+                        await sendPaymentSuccessEmail(user.email, paymentData);
+                        console.log('[SUCCESS PAGE] ✅ Existing order - User payment success email sent successfully');
+                    } else {
+                        console.log('[SUCCESS PAGE] ⚠️ Existing order - User email missing or user not found, skipping user email');
+                    }
+                } else {
+                    console.log('[SUCCESS PAGE] ⚠️ Existing order - UserId missing, skipping user email');
+                }
+
+                // Send notification to admin
+                console.log('[SUCCESS PAGE] 📧 Sending payment success notification to admin for existing order');
+                await sendPaymentSuccessNotificationToAdmin(paymentData);
+                console.log('[SUCCESS PAGE] ✅ Existing order - Admin payment notification sent successfully');
+
+                console.log('[SUCCESS PAGE] 🎉 All emails sent successfully for existing order, transaction:', transaction_id);
+
+            } catch (emailError) {
+                console.error('[SUCCESS PAGE] ❌ Error sending payment success emails for existing checkout:', emailError);
+                // Don't throw error - payment was already successful
+            }
+
             return response.json({
-                message: "Order already processed",
+                message: "Order already processed - emails sent",
                 success: true,
                 data: existingCheckout
             });
@@ -87,6 +137,7 @@ const verifyPaymentController = async (request, response) => {
             }
 
             // Send payment success emails
+            console.log('[SUCCESS PAGE] 🚀 Starting email sends for NEW order');
             try {
                 const userId = meta.userId || request.userId;
                 const paymentData = {
@@ -99,31 +150,38 @@ const verifyPaymentController = async (request, response) => {
                     itemCount: cartItemsForCheckout.length
                 };
 
-                console.log('[verifyPaymentController] preparing email sends', {
+                console.log('[SUCCESS PAGE] 📧 Preparing email sends for transaction:', transaction_id, {
                     userId,
                     customerEmail: paymentData.customerEmail,
                     adminEmail: process.env.ADMIN_NOTIFICATION_EMAIL,
                     itemCount: paymentData.itemCount,
+                    orderId: savedCheckout._id
                 });
 
                 // Send email to user if userId exists
                 if (userId) {
                     const user = await UserModel.findById(userId);
-                    console.log('[verifyPaymentController] user lookup', { userId, userEmail: user?.email });
+                    console.log('[SUCCESS PAGE] 👤 User lookup result:', { userId, userEmail: user?.email, userFound: !!user });
                     if (user && user.email) {
+                        console.log('[SUCCESS PAGE] 📧 Sending payment success email to user:', user.email);
                         await sendPaymentSuccessEmail(user.email, paymentData);
+                        console.log('[SUCCESS PAGE] ✅ User payment success email sent successfully');
                     } else {
-                        console.log('[verifyPaymentController] user email missing, skipping user email');
+                        console.log('[SUCCESS PAGE] ⚠️ User email missing or user not found, skipping user email');
                     }
                 } else {
-                    console.log('[verifyPaymentController] userId missing, skipping user email');
+                    console.log('[SUCCESS PAGE] ⚠️ UserId missing, skipping user email');
                 }
 
                 // Send notification to admin
+                console.log('[SUCCESS PAGE] 📧 Sending payment success notification to admin');
                 await sendPaymentSuccessNotificationToAdmin(paymentData);
+                console.log('[SUCCESS PAGE] ✅ Admin payment notification sent successfully');
+
+                console.log('[SUCCESS PAGE] 🎉 All emails sent successfully for transaction:', transaction_id);
 
             } catch (emailError) {
-                console.error('Error sending payment success emails:', emailError);
+                console.error('[SUCCESS PAGE] ❌ Error sending payment success emails:', emailError);
                 // Don't throw error - payment was successful
             }
 

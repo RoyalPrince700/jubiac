@@ -85,6 +85,7 @@ module.exports = { sendVerificationEmail,sendWelcomeEmail,sendPasswordResetEmail
 
 // Admin order notification
 const sendOrderNotificationEmail = async (recipients, payload) => {
+    console.log('[EMAIL] 📧 sendOrderNotificationEmail called for recipients:', recipients, 'customer:', payload.name);
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
@@ -127,6 +128,7 @@ const sendOrderNotificationEmail = async (recipients, payload) => {
 
 // User order confirmation email
 const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
+    console.log('[EMAIL] 📧 sendUserOrderConfirmationEmail called for:', userEmail, 'order:', payload._id);
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
@@ -167,6 +169,7 @@ const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
 
 // User payment success email
 const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
+    console.log('[EMAIL] 📧 sendPaymentSuccessEmail called for:', userEmail, 'transaction:', paymentData.transactionId);
     const orderDetails = paymentData.orderId ? `
       <h4>Order Information</h4>
       <p><strong>Order ID:</strong> ${paymentData.orderId}</p>
@@ -199,6 +202,7 @@ const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
 
 // Admin payment success notification
 const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
+    console.log('[EMAIL] 📧 sendPaymentSuccessNotificationToAdmin called for transaction:', paymentData.transactionId);
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
     if (!adminEmail) {
         console.log('ADMIN_NOTIFICATION_EMAIL not configured, skipping admin notification');
@@ -238,6 +242,7 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
 
 // Order Status Update Email
 const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
+    console.log('[EMAIL] 📧 sendOrderStatusUpdateEmail called for:', userEmail, 'order:', orderData.orderId);
     const getStatusClass = (status) => {
         const statusClasses = {
             'Pending': 'pending',

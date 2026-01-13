@@ -15,7 +15,10 @@ const Success = () => {
       const transaction_id = searchParams.get('transaction_id');
       const status = searchParams.get('status');
 
+      console.log('[SUCCESS PAGE] 🎯 Page loaded with params:', { transaction_id, status });
+
       if (status === 'successful' && transaction_id) {
+        console.log('[SUCCESS PAGE] ✅ Payment successful, calling verifyPayment API for transaction:', transaction_id);
         try {
           const response = await fetch(SummaryApi.verifyPayment.url, {
             method: SummaryApi.verifyPayment.method,
@@ -27,15 +30,21 @@ const Success = () => {
           });
 
           const data = await response.json();
+          console.log('[SUCCESS PAGE] 📡 API Response:', data);
+
           if (data.success) {
+            console.log('[SUCCESS PAGE] 🎉 Order confirmed successfully - emails should be sent!');
             toast.success("Order confirmed!");
           } else {
+            console.log('[SUCCESS PAGE] ❌ Order confirmation failed:', data.message);
             toast.error(data.message || "Failed to confirm order");
           }
         } catch (error) {
-          console.error("Verification error:", error);
+          console.error("[SUCCESS PAGE] ❌ Verification API error:", error);
           toast.error("Error confirming order");
         }
+      } else {
+        console.log('[SUCCESS PAGE] ⚠️ Payment not successful or missing transaction_id:', { status, transaction_id });
       }
       setLoading(false);
     };

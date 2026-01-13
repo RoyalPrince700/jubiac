@@ -74,18 +74,23 @@ const createCheckout = async (req, res) => {
       }
 
       // Send order confirmation email to the user
+      console.log('[CHECKOUT] 📧 Sending order confirmation email to user');
       try {
         const user = await UserModel.findById(req.userId);
+        console.log('[CHECKOUT] 👤 User lookup for order confirmation:', { userId: req.userId, userEmail: user?.email, userFound: !!user });
         if (user && user.email) {
           await sendUserOrderConfirmationEmail(user.email, savedCheckout);
-          console.log('Order confirmation email sent to user:', user.email);
+          console.log('[CHECKOUT] ✅ Order confirmation email sent to user:', user.email);
+        } else {
+          console.log('[CHECKOUT] ⚠️ User not found or no email, skipping order confirmation');
         }
       } catch (emailError) {
-        console.error('Error sending order confirmation email:', emailError);
+        console.error('[CHECKOUT] ❌ Error sending order confirmation email:', emailError);
         // Don't throw error - we don't want to block the order creation
       }
 
       // Send order notification email to admin
+      console.log('[CHECKOUT] 📧 Sending order notification email to admin');
       try {
         const adminEmail1 = process.env.ADMINEMAIL1;
         const adminEmail2 = process.env.ADMINEMAIL2;
@@ -99,6 +104,8 @@ const createCheckout = async (req, res) => {
           adminRecipients.push(adminNotificationEmail);
         }
 
+        console.log('[CHECKOUT] 👥 Admin recipients found:', adminRecipients);
+
         if (adminRecipients.length > 0) {
           // Format the order data for admin notification
           const adminOrderData = {
@@ -111,13 +118,14 @@ const createCheckout = async (req, res) => {
             cartItems: savedCheckout.cartItems
           };
 
+          console.log('[CHECKOUT] 📧 Sending admin order notification for order:', savedCheckout._id);
           await sendOrderNotificationEmail(adminRecipients, adminOrderData);
-          console.log('Order notification email sent to admins:', adminRecipients.join(', '));
+          console.log('[CHECKOUT] ✅ Order notification email sent to admins:', adminRecipients.join(', '));
         } else {
-          console.log('No admin email addresses configured for order notifications');
+          console.log('[CHECKOUT] ⚠️ No admin email addresses configured for order notifications');
         }
       } catch (emailError) {
-        console.error('Error sending admin order notification:', emailError);
+        console.error('[CHECKOUT] ❌ Error sending admin order notification:', emailError);
         // Don't throw error - we don't want to block the order creation
       }
     }
