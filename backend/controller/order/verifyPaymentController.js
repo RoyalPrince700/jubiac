@@ -137,7 +137,8 @@ const verifyPaymentController = async (request, response) => {
             }
 
             // Send payment success emails
-            console.log('[SUCCESS PAGE] 🚀 Starting email sends for NEW order');
+            console.log('[PRODUCTION SUCCESS PAGE] 🚀 Starting email sends for NEW order');
+            console.log('[PRODUCTION SUCCESS PAGE] 👤 User ID:', userId, 'Transaction:', transaction_id);
             try {
                 const userId = meta.userId || request.userId;
                 const paymentData = {

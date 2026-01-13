@@ -74,7 +74,8 @@ const createCheckout = async (req, res) => {
       }
 
       // Send order confirmation email to the user
-      console.log('[CHECKOUT] 📧 Sending order confirmation email to user');
+      console.log('[PRODUCTION CHECKOUT] 📧 Sending order confirmation email to user');
+      console.log('[PRODUCTION CHECKOUT] 👤 User found:', !!user, 'User email:', user?.email);
       try {
         const user = await UserModel.findById(req.userId);
         console.log('[CHECKOUT] 👤 User lookup for order confirmation:', { userId: req.userId, userEmail: user?.email, userFound: !!user });

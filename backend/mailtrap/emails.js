@@ -28,9 +28,13 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendWelcomeEmail = async (email, name = 'there') => {
-    console.log('[EMAIL] 📧 sendWelcomeEmail called for:', email, 'name:', name);
+    console.log('[PRODUCTION EMAIL] 📧 sendWelcomeEmail called for:', email, 'name:', name);
+    console.log('[PRODUCTION EMAIL] 🔧 Mailtrap config check - host:', process.env.MAILTRAP_PROD_HOST, 'user exists:', !!process.env.MAILTRAP_PROD_USER);
     try {
         const personalizedGreeting = name !== 'there' ? `Hi ${name}!` : 'Hello there!';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://jubiac.vercel.app'; // Default to Vercel URL
+        console.log("[EMAIL] 📧 Using frontend URL for welcome email:", frontendUrl);
+
         const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +73,7 @@ const sendWelcomeEmail = async (email, name = 'there') => {
     </ul>
 
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" class="cta-button">Start Exploring</a>
+      <a href="${frontendUrl}" class="cta-button">Start Exploring</a>
     </div>
 
     <p>If you have any questions, feel free to reach out to our support team. We're here to help!</p>
@@ -91,10 +95,18 @@ const sendWelcomeEmail = async (email, name = 'there') => {
         };
 
         logSendAttempt('welcome', mailOptions);
+        console.log("[EMAIL] 🚀 About to send welcome email via transporter...");
         const response = await transporter.sendMail(mailOptions);
         console.log("[EMAIL] ✅ Welcome email sent successfully:", response.messageId);
+        return response;
     } catch (error) {
         console.error("[EMAIL] ❌ Error sending welcome email:", error);
+        console.error("[EMAIL] ❌ Error details:", {
+            message: error.message,
+            code: error.code,
+            command: error.command,
+            errno: error.errno
+        });
         throw new Error(`Error sending welcome email: ${error.message}`);
     }
 }

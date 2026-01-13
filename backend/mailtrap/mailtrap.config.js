@@ -16,12 +16,14 @@ const transporter = nodemailer.createTransport({
 });
 
 // Debug the mailer configuration (safe values only)
-console.log('[Mailtrap] Transporter configured', {
+console.log('[PRODUCTION MAILTRAP] Transporter configured', {
     host: process.env.MAILTRAP_PROD_HOST,
     port: process.env.MAILTRAP_PROD_PORT,
     userSet: Boolean(process.env.MAILTRAP_PROD_USER),
     passSet: Boolean(process.env.MAILTRAP_PROD_PASS),
     from: process.env.MAILTRAP_FROM_EMAIL || "noreply@jubiac.com",
+    frontendUrl: process.env.FRONTEND_URL,
+    nodeEnv: process.env.NODE_ENV
 });
 
 const sender = {

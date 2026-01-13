@@ -52,6 +52,7 @@ passport.use(
             isVerified: true, // Google accounts are pre-verified
           });
           console.log('✅ [Passport] New user created:', user._id);
+          console.log('[PRODUCTION GOOGLE] 🚀 About to trigger welcome email for new user:', user.email);
 
           // Send welcome email for first-time Google signup (non-blocking)
           console.log('[GOOGLE SIGNUP] 📧 Sending welcome email to new Google user:', user.email);
@@ -59,11 +60,18 @@ passport.use(
             const recipientEmail = user.email;
             const recipientName = user.fullName || 'there';
             console.log('[GOOGLE SIGNUP] 👤 User details - Email:', recipientEmail, 'Name:', recipientName);
+
+            // Send email synchronously to ensure it's logged properly
             sendWelcomeEmail(recipientEmail, recipientName)
-              .then(() => console.log('[GOOGLE SIGNUP] ✅ Welcome email sent successfully to', recipientEmail))
-              .catch(err => console.error('[GOOGLE SIGNUP] ❌ Failed to send welcome email:', err.message));
+              .then((result) => {
+                console.log('[GOOGLE SIGNUP] ✅ Welcome email sent successfully to', recipientEmail, 'Result:', result?.messageId || 'OK');
+              })
+              .catch(err => {
+                console.error('[GOOGLE SIGNUP] ❌ Failed to send welcome email to', recipientEmail, 'Error:', err.message);
+                console.error('[GOOGLE SIGNUP] ❌ Full error details:', err);
+              });
           } catch (e) {
-            console.error('[GOOGLE SIGNUP] ❌ Error triggering welcome email:', e);
+            console.error('[GOOGLE SIGNUP] ❌ Error triggering welcome email for', user.email, 'Error:', e);
           }
         } else {
           console.log('🔄 [Passport] Existing user found, checking avatar...');
