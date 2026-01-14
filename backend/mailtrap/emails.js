@@ -43,7 +43,7 @@ const sendWelcomeEmail = async (email, name = 'there') => {
     <div class="header">
       <div class="welcome-icon">🎉</div>
       <h1>Welcome to Jubiac!</h1>
-      <p>Your journey to amazing food starts here</p>
+      <p>Your journey to perfect baking and decorating starts here</p>
     </div>
 
     <h2>${personalizedGreeting}</h2>
@@ -53,10 +53,10 @@ const sendWelcomeEmail = async (email, name = 'there') => {
     <p>Here's what you can do to get started:</p>
 
     <ul>
-      <li><strong>Browse our menu</strong> - Discover delicious meals from top restaurants</li>
-      <li><strong>Place your first order</strong> - Fast, reliable delivery to your doorstep</li>
-      <li><strong>Track your orders</strong> - Real-time updates on your delivery status</li>
-      <li><strong>Earn rewards</strong> - Get points on every order for future discounts</li>
+      <li><strong>Browse our catalog</strong> - Discover premium baking tools and decorating supplies</li>
+      <li><strong>Shop our equipment</strong> - Find high-quality baking essentials and kitchen tools</li>
+      <li><strong>Track your orders</strong> - Real-time updates on your purchases and shipping status</li>
+      <li><strong>Earn rewards</strong> - Get points on every purchase for future discounts</li>
     </ul>
 
     <div style="text-align: center; margin: 30px 0;">
@@ -77,7 +77,7 @@ const sendWelcomeEmail = async (email, name = 'there') => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: email,
-            subject: "🎉 Welcome to Jubiac - Your Food Journey Begins!",
+            subject: "🎉 Welcome to Jubiac - Your Baking Journey Begins!",
             html,
         };
 
